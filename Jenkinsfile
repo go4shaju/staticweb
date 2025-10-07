@@ -1,24 +1,28 @@
 pipeline {
     agent any
+
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
             }
         }
-        stage('Install & Build') {
+        stage('Validate') {
             steps {
-                sh 'npm install && npm run build'
+                sh 'cd staticweb && npm install'
+                sh 'cd staticweb && npm run lint'
+                sh 'cd staticweb && npm test'
             }
         }
-        stage('Build Docker Image') {
+        stage('Package') {
             steps {
-                sh 'docker-compose build react-nginx'
+                sh 'cd staticweb && npm run build'
             }
         }
-        stage('Restart React nginx Container') {
+        stage('Deploy to Nginx') {
             steps {
-                sh 'docker-compose up -d --force-recreate react-nginx'
+                // Replace nginx_container with your actual container name or ID
+                sh 'docker cp staticweb/build/. web:/usr/share/nginx/html/'
             }
         }
     }
