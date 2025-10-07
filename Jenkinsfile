@@ -8,7 +8,7 @@ pipeline {
         }
         stage('Install & Build') {
             steps {
-                sh 'cd react-app && npm install && npm run build'
+                sh 'npm install && npm run build'
             }
         }
         stage('Build Docker Image') {
